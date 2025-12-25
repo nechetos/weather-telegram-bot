@@ -1,27 +1,24 @@
-import asyncio
 import requests
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
+from telegram import Update
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    ContextTypes,
+)
 
 BOT_TOKEN = "8165242190:AAGGwSR8oh0oBdtJkIkglIbtAmDBlZG2qfE"
-
 WEATHER_API_KEY = "f3cc9a774ce15cad663ced259bf571af"
 CITY = "Yekaterinburg"
 
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
 
-
-@dp.message(Command("start"))
-async def start(message: types.Message):
-    await message.answer(
-        "Привет! Я бот погоды ☁️\n"
-        "Напиши /weather — пришлю прогноз."
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "Привет! Я бот погоды ☀️\n"
+        "Напиши /weather — пришлю текущую погоду."
     )
 
 
-@dp.message(Command("weather"))
-async def weather(message: types.Message):
+async def weather(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = (
         f"https://api.openweathermap.org/data/2.5/weather"
         f"?q={CITY}&appid={WEATHER_API_KEY}&units=metric&lang=ru"
@@ -31,21 +28,26 @@ async def weather(message: types.Message):
     data = r.json()
 
     if r.status_code != 200:
-        await message.answer("Не удалось получить погоду 😢")
+        await update.message.reply_text("Не удалось получить погоду 😢")
         return
 
     temp = data["main"]["temp"]
     desc = data["weather"][0]["description"]
 
-    await message.answer(
+    await update.message.reply_text(
         f"🌡 Температура: {temp}°C\n"
         f"☁️ Погода: {desc}"
     )
 
 
-async def main():
-    await dp.start_polling(bot)
+def main():
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("weather", weather))
+
+    app.run_polling()
 
 
 if name == "main":
-    asyncio.run(main())
+    main()
