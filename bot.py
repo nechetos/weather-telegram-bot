@@ -28,5 +28,6 @@ def main():
     app.add_handler(CommandHandler("weather", weather))
     app.run_polling()
 
-if name == "main":
+if __name__ == "__main__":
     main()
+
