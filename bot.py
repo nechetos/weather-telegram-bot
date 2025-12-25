@@ -1,7 +1,7 @@
 from telegram.ext import Updater, CommandHandler
 import os
 
-TOKEN = os.getenv("8165242190:AAGGwSR8oh0oBdtJkIkglIbtAmDBlZG2qfE")
+TOKEN = os.getenv("BOT_TOKEN")
 
 def start(update, context):
     update.message.reply_text("Привет! Я погодный бот ☀️")
@@ -16,4 +16,5 @@ def main():
     updater.idle()
 
 if name == "main":
+
     main()
